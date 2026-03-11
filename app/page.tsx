@@ -1,65 +1,129 @@
-import Image from "next/image";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Navbar } from "@/components/Navbar";
+import { ProductCard } from "@/components/ProductCard";
+import { ShoppingBag, TrendingUp, Sparkles } from "lucide-react";
 
 export default function Home() {
+  const { data: products, isLoading, isError, error } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => api.getProducts(),
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen flex flex-col bg-white">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <header className="bg-zinc-950 text-white py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex items-center space-x-3 text-blue-400 mb-6">
+            <Sparkles size={20} />
+            <span className="font-black uppercase tracking-[0.3em] text-xs">New Collection 2026</span>
+          </div>
+          <h1 className="text-6xl sm:text-8xl font-black tracking-tighter mb-8 max-w-4xl leading-[0.9]">
+            ELEVATE YOUR <span className="text-blue-600 italic">STYLE</span> WITH PURPOSE.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-zinc-400 text-xl max-w-xl mb-12 font-medium leading-relaxed">
+            Discover a curated selection of premium products designed for the modern individual. Quality meets aesthetic.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button className="bg-white text-black px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-200 transition-all transform hover:scale-105">
+              Shop All Products
+            </button>
+            <button className="border border-zinc-700 text-white px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-800 transition-all">
+              Our Vision
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <div className="flex items-center space-x-2 text-blue-600 mb-2 font-black uppercase tracking-widest text-xs">
+              <TrendingUp size={16} />
+              <span>Most Wanted</span>
+            </div>
+            <h2 className="text-5xl font-black text-zinc-900 tracking-tight">
+              Featured Items
+            </h2>
+          </div>
+          <div className="flex space-x-2">
+            {['All', 'Apparel', 'Tech', 'Home'].map((cat) => (
+              <button key={cat} className="px-6 py-2 rounded-full border border-zinc-100 font-bold text-sm hover:bg-zinc-900 hover:text-white transition-all">
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="space-y-4">
+                <div className="animate-pulse bg-zinc-100 aspect-square rounded-[2rem]"></div>
+                <div className="h-6 w-2/3 animate-pulse bg-zinc-100 rounded-full"></div>
+                <div className="h-4 w-1/2 animate-pulse bg-zinc-100 rounded-full"></div>
+              </div>
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="text-center py-24 bg-red-50 rounded-[3rem] border border-red-100">
+            <p className="text-red-500 font-black text-xl mb-4">Connection Failed</p>
+            <p className="text-red-400 font-medium">{(error as any).message}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {products?.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
+
+        {products?.length === 0 && !isLoading && (
+          <div className="text-center py-32">
+            <ShoppingBag size={64} className="mx-auto text-zinc-200 mb-6" />
+            <h3 className="text-3xl font-black text-zinc-900 mb-2">No products found</h3>
+            <p className="text-zinc-400 font-medium text-lg">Check back later for our new arrivals.</p>
+          </div>
+        )}
+      </main>
+
+      <footer className="bg-zinc-50 border-t border-zinc-100 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="col-span-2">
+            <h3 className="text-2xl font-black mb-6 italic">STORE.</h3>
+            <p className="text-zinc-500 max-w-sm font-medium leading-relaxed">
+              We provide the best quality products for your daily lifestyle. Our mission is to combine luxury with accessibility.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-black uppercase tracking-widest text-xs mb-6 text-zinc-400">Support</h4>
+            <ul className="space-y-4 font-bold text-zinc-900">
+              <li>Contact</li>
+              <li>Shipping</li>
+              <li>Returns</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-black uppercase tracking-widest text-xs mb-6 text-zinc-400">Social</h4>
+            <ul className="space-y-4 font-bold text-zinc-900">
+              <li>Instagram</li>
+              <li>Twitter</li>
+              <li>LinkedIn</li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 pt-12 border-t border-zinc-200 text-center">
+          <p className="text-zinc-400 text-sm font-black uppercase tracking-[0.2em]">
+            © 2026 Professional E-Commerce — Built for Excellence.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </footer>
     </div>
   );
 }
