@@ -1,17 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Navbar } from "@/components/Navbar";
 import { ProductCard } from "@/components/ProductCard";
 import { useLanguage } from "@/context/LanguageContext";
-import { ShoppingBag, TrendingUp, Sparkles } from "lucide-react";
+import { ShoppingBag, TrendingUp, Sparkles, Search, X, Filter } from "lucide-react";
 
 export default function Home() {
   const { t } = useLanguage();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [isVisionModalOpen, setIsVisionModalOpen] = useState(false);
+  const [minPrice, setMinPrice] = useState<number | "">("");
+  const [maxPrice, setMaxPrice] = useState<number | "">("");
+
   const { data: products, isLoading, isError, error } = useQuery({
-    queryKey: ["products"],
-    queryFn: () => api.getProducts(),
+    queryKey: ["products", activeCategory, searchTerm, minPrice, maxPrice],
+    queryFn: () => {
+      let finalSearch = searchTerm;
+      if (activeCategory !== "all" && !searchTerm) {
+        const categoryMap: Record<string, string> = {
+          'apparel': 'clothing', // Esto buscará men's clothing y women's clothing
+          'tech': 'electronics',
+          'home': 'jewelery'
+        };
+        finalSearch = categoryMap[activeCategory] || activeCategory;
+      }
+      return api.getProducts(finalSearch, minPrice || undefined, maxPrice || undefined);
+    },
   });
 
   const categories = [
@@ -25,6 +43,30 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       
+      {/* Modal de Nuestra Visión */}
+      {isVisionModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] p-8 max-w-lg w-full relative shadow-2xl animate-in fade-in zoom-in duration-300">
+            <button 
+              onClick={() => setIsVisionModalOpen(false)}
+              className="absolute right-6 top-6 p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X size={24} className="text-gray-500" />
+            </button>
+            <h2 className="text-3xl font-black text-gray-900 mb-6 italic">{t("hero.visionTitle")}</h2>
+            <p className="text-gray-600 font-medium leading-relaxed text-lg">
+              {t("hero.visionDescription")}
+            </p>
+            <button 
+              onClick={() => setIsVisionModalOpen(false)}
+              className="mt-8 w-full bg-zinc-900 text-white py-4 rounded-xl font-bold hover:bg-zinc-800 transition-colors"
+            >
+              {t("cart.continueShopping")}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <header className="bg-zinc-950 text-white py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
@@ -36,14 +78,65 @@ export default function Home() {
           <h1 className="text-6xl sm:text-8xl font-black tracking-tighter mb-8 max-w-4xl leading-[0.9]">
             {t("hero.title")} <span className="text-blue-600 italic">{t("hero.titleHighlight")}</span> {t("hero.titleEnd")}
           </h1>
-          <p className="text-zinc-400 text-xl max-w-xl mb-12 font-medium leading-relaxed">
-            {t("hero.description")}
-          </p>
+          
+          {/* Controles de Búsqueda y Filtro */}
+          <div className="flex flex-col md:flex-row gap-4 max-w-3xl mb-12">
+            <div className="relative flex-grow">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
+              <input 
+                type="text"
+                placeholder={t("navbar.searchPlaceholder")}
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setActiveCategory("all");
+                }}
+                className="w-full bg-white text-black pl-12 pr-4 py-4 rounded-[5px] border-none focus:ring-2 focus:ring-blue-600 transition-all font-medium"
+              />
+            </div>
+            
+            <div className="flex gap-2 items-center bg-zinc-900/50 p-1 rounded-[5px] border border-zinc-800">
+              <div className="relative w-24">
+                <input 
+                  type="number"
+                  placeholder={t("products.minPrice")}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                  className="w-full bg-transparent text-white px-3 py-3 rounded-[5px] border border-zinc-700 focus:border-blue-500 outline-none text-sm font-bold"
+                />
+              </div>
+              <span className="text-zinc-600">-</span>
+              <div className="relative w-24">
+                <input 
+                  type="number"
+                  placeholder={t("products.maxPrice")}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                  className="w-full bg-transparent text-white px-3 py-3 rounded-[5px] border border-zinc-700 focus:border-blue-500 outline-none text-sm font-bold"
+                />
+              </div>
+              <div className="p-3 text-blue-500">
+                <Filter size={20} />
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-white text-black px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-200 transition-all transform hover:scale-105">
+            <button 
+              onClick={() => {
+                setSearchTerm("");
+                setActiveCategory("all");
+                setMinPrice("");
+                setMaxPrice("");
+              }}
+              className="bg-white text-black px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-200 transition-all transform hover:scale-105"
+            >
               {t("hero.shopAll")}
             </button>
-            <button className="border border-zinc-700 text-white px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-800 transition-all">
+            <button 
+              onClick={() => setIsVisionModalOpen(true)}
+              className="border border-zinc-700 text-white px-10 py-5 rounded-full font-black text-lg hover:bg-zinc-800 transition-all"
+            >
               {t("hero.ourVision")}
             </button>
           </div>
@@ -58,12 +151,23 @@ export default function Home() {
               <span>{t("products.mostWanted")}</span>
             </div>
             <h2 className="text-5xl font-black text-zinc-900 tracking-tight">
-              {t("products.featuredItems")}
+              {activeCategory === 'all' ? t("products.featuredItems") : categories.find(c => c.id === activeCategory)?.label}
             </h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
-              <button key={cat.id} className="px-6 py-2 rounded-full border border-zinc-100 font-bold text-sm hover:bg-zinc-900 hover:text-white transition-all">
+              <button 
+                key={cat.id} 
+                onClick={() => {
+                  setActiveCategory(cat.id);
+                  setSearchTerm("");
+                }}
+                className={`px-6 py-2 rounded-full border transition-all font-bold text-sm ${
+                  activeCategory === cat.id 
+                  ? 'bg-zinc-900 text-white border-zinc-900' 
+                  : 'border-zinc-100 hover:bg-zinc-900 hover:text-white'
+                }`}
+              >
                 {cat.label}
               </button>
             ))}

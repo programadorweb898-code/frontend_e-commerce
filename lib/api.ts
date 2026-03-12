@@ -76,8 +76,14 @@ class ApiClient {
   }
 
   // Products
-  async getProducts(): Promise<Product[]> {
-    const data = await this.fetch<{ productos: Product[] }>("/products/getProducts");
+  async getProducts(search?: string, min?: number, max?: number): Promise<Product[]> {
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (min) params.append("min", min.toString());
+    if (max) params.append("max", max.toString());
+    
+    const url = `/products/getProducts?${params.toString()}`;
+    const data = await this.fetch<{ productos: Product[] }>(url);
     return data.productos;
   }
 

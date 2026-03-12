@@ -7,6 +7,7 @@ export const translations = {
       login: "Iniciar Sesión",
       logout: "Cerrar Sesión",
       orders: "Pedidos",
+      searchPlaceholder: "Buscar productos...",
     },
     hero: {
       badge: "Nueva Colección 2026",
@@ -17,6 +18,8 @@ export const translations = {
         "Descubre una selección curada de productos premium diseñados para el individuo moderno. La calidad se encuentra con la estética.",
       shopAll: "Ver Todos los Productos",
       ourVision: "Nuestra Visión",
+      visionTitle: "Nuestra Visión",
+      visionDescription: "Nuestra visión es ser la tienda líder en productos premium, combinando estilo, calidad y accesibilidad. Nos esforzamos por ofrecer una experiencia de compra única que inspire confianza y satisfacción en cada cliente.",
     },
     products: {
       mostWanted: "Más Buscado",
@@ -24,10 +27,12 @@ export const translations = {
       all: "Todos",
       apparel: "Ropa",
       tech: "Tecnología",
-      home: "Hogar",
+      home: "Joyas",
       noProducts: "No hay productos",
       noProductsDesc: "Vuelve más tarde para nuestras nuevas llegadas.",
       connectionFailed: "Conexión Fallida",
+      minPrice: "Mín",
+      maxPrice: "Máx",
     },
     footer: {
       description:
@@ -89,6 +94,8 @@ export const translations = {
         "Discover a curated selection of premium products designed for the modern individual. Quality meets aesthetic.",
       shopAll: "Shop All Products",
       ourVision: "Our Vision",
+      visionTitle: "Our Vision",
+      visionDescription: "Our vision is to be the leading store for premium products, combining style, quality, and accessibility. We strive to offer a unique shopping experience that inspires confidence and satisfaction in every customer.",
     },
     products: {
       mostWanted: "Most Wanted",
@@ -96,7 +103,7 @@ export const translations = {
       all: "All",
       apparel: "Apparel",
       tech: "Tech",
-      home: "Home",
+      home: "Jewelery",
       noProducts: "No products found",
       noProductsDesc: "Check back later for our new arrivals.",
       connectionFailed: "Connection Failed",
