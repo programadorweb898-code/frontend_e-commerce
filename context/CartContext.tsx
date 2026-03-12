@@ -18,6 +18,17 @@ interface CartContextType {
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const defaultCartContext: CartContextType = {
+  cart: [],
+  addToCart: async () => {},
+  removeFromCart: async () => {},
+  restFromCart: async () => {},
+  clearCart: async () => {},
+  totalItems: 0,
+  totalPrice: 0,
+  isLoading: false,
+};
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   
@@ -69,6 +80,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart must be used within CartProvider");
+  if (!context) return defaultCartContext;
   return context;
 };

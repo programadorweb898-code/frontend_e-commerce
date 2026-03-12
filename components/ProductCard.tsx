@@ -14,13 +14,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-      <div className="relative h-64 w-full bg-gray-50 overflow-hidden">
-        <Image
-          src={product.image || "/placeholder.png"}
-          alt={product.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+      <div className="relative h-64 w-full bg-gray-50 overflow-hidden flex items-center justify-center">
+        <div className="relative h-1/2 w-1/2">
+          <Image
+            src={product.image || "/placeholder.png"}
+            alt={product.title}
+            fill
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
       </div>
       <div className="p-4">
         <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
