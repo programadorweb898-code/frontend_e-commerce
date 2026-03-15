@@ -1,12 +1,19 @@
 export const translations = {
   es: {
     navbar: {
+      store: "STORE",
       home: "Inicio",
-      products: "Productos",
+      products: "Más vendidos",
+      phoneSales: "Venta telefónica",
+      help: "Ayuda",
       cart: "Carrito",
       login: "Iniciar Sesión",
       logout: "Cerrar Sesión",
       orders: "Pedidos",
+      logoutConfirmTitle: "Cerrar sesión",
+      logoutConfirmMessage: "¿Estás seguro que deseas salir de tu cuenta?",
+      confirm: "Aceptar",
+      cancel: "Cancelar",
       searchPlaceholder: "Buscar productos...",
     },
     hero: {
@@ -56,6 +63,11 @@ export const translations = {
       total: "Total",
       checkout: "Proceder al Pago",
       continueShopping: "Continuar Comprando",
+      clear: "Vaciar todo el carrito",
+    },
+    orders: {
+      title: "Compras realizadas / confirmadas",
+      empty: "Todavía no has realizado ninguna compra",
     },
     language: {
       es: "Español",
@@ -78,12 +90,19 @@ export const translations = {
   },
   en: {
     navbar: {
+      store: "STORE",
       home: "Home",
-      products: "Products",
+      products: "Most Wanted",
+      phoneSales: "Phone Sales",
+      help: "Help",
       cart: "Cart",
       login: "Login",
       logout: "Logout",
       orders: "Orders",
+      logoutConfirmTitle: "Sign out",
+      logoutConfirmMessage: "Are you sure you want to sign out?",
+      confirm: "Confirm",
+      cancel: "Cancel",
     },
     hero: {
       badge: "New Collection 2026",
@@ -130,6 +149,11 @@ export const translations = {
       total: "Total",
       checkout: "Proceed to Checkout",
       continueShopping: "Continue Shopping",
+      clear: "Clear cart",
+    },
+    orders: {
+      title: "Completed / Confirmed Purchases",
+      empty: "You haven't made any purchases yet",
     },
     language: {
       es: "Español",

@@ -53,9 +53,9 @@ export default function ProductDetailPage() {
           <div className="relative aspect-square bg-gray-50 rounded-3xl overflow-hidden shadow-sm border border-gray-100">
             <Image
               src={product.image || "/placeholder.png"}
-              alt={product.name}
+              alt={product.title}
               fill
-              className="object-cover"
+              className="object-contain p-8"
             />
           </div>
 
@@ -65,7 +65,7 @@ export default function ProductDetailPage() {
                 {product.category}
               </span>
               <h1 className="text-5xl font-black text-gray-900 leading-tight mb-6">
-                {product.name}
+                {product.title}
               </h1>
               <p className="text-4xl font-black text-gray-900 mb-8">
                 ${product.price.toFixed(2)}

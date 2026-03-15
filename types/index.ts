@@ -27,12 +27,13 @@ export interface CartItem {
 export interface Order {
   _id: string;
   userId: string;
-  products: {
+  items: {
     productId: string;
+    title: string;
     quantity: number;
-    price: number;
+    priceAtPurchase: number;
   }[];
-  totalPrice: number;
+  totalAmount: number;
   status: string;
   createdAt: string;
 }

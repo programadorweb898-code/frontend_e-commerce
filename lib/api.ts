@@ -4,11 +4,16 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 class ApiClient {
   private accessToken: string | null = null;
+  private onUnauthorized: (() => void) | null = null;
 
   constructor() {
     if (typeof window !== "undefined") {
       this.accessToken = localStorage.getItem("accessToken");
     }
+  }
+
+  setOnUnauthorized(callback: () => void) {
+    this.onUnauthorized = callback;
   }
 
   setAccessToken(token: string | null) {
@@ -45,12 +50,18 @@ class ApiClient {
       const refreshed = await this.refreshToken();
       if (refreshed) {
         return this.fetch<T>(endpoint, options);
+      } else {
+        if (this.onUnauthorized) {
+          this.onUnauthorized();
+        }
+        throw new Error("SESSION_EXPIRED");
       }
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "Unknown error" }));
-      throw new Error(error.message || "Request failed");
+      const error = await response.json().catch(() => ({}));
+      const errorMessage = error.message || error.error || response.statusText || "Request failed";
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -98,6 +109,10 @@ class ApiClient {
   }
 
   // Auth
+  async getMe(): Promise<User> {
+    return this.fetch<User>("/api/me");
+  }
+
   async login(credentials: any): Promise<{ accessToken: string; message: string }> {
     const data = await this.fetch<{ accessToken: string; message: string }>("/api/login", {
       method: "POST",
@@ -120,6 +135,10 @@ class ApiClient {
   }
 
   // Cart
+  async getCart(): Promise<any> {
+    return this.fetch("/products/getCart");
+  }
+
   async addToCart(productId: string, quantity: number): Promise<any> {
     return this.fetch("/products/addProduct", {
       method: "POST",
@@ -141,7 +160,8 @@ class ApiClient {
 
   // Orders
   async getOrders(): Promise<Order[]> {
-    return this.fetch<Order[]>("/api/orders");
+    const data = await this.fetch<{ orders: Order[] }>("/api/orders");
+    return data.orders || [];
   }
 
   async checkout(paymentIntentId?: string): Promise<any> {

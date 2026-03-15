@@ -1,9 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, ReactNode, useMemo } from "react";
 import { Product, CartItem } from "@/types";
 import { api } from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "./AuthContext";
+import { useRouter } from "next/navigation";
 
 interface CartContextType {
   cart: CartItem[];
@@ -31,32 +33,55 @@ const defaultCartContext: CartContextType = {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const router = useRouter();
   
-  // En una app real, aquí usarías useQuery para obtener el carrito del backend
-  // Por ahora lo mantendremos sincronizado vía mutaciones
-  const cart: CartItem[] = []; // Este dato vendría de un useQuery(['cart'])
+  const { data: cartData, isLoading: isLoadingCart } = useQuery({
+    queryKey: ['cart'],
+    queryFn: () => api.getCart(),
+    enabled: !!user, // Solo cargar si hay usuario
+  });
+
+  const cart = useMemo(() => {
+    if (!cartData || !cartData.items) return [];
+    return cartData.items.map((item: any) => {
+      const p = item.productId;
+      return {
+        productId: typeof p === 'object' ? p._id : p,
+        name: typeof p === 'object' ? p.title : "Product",
+        price: item.priceSnapShot || (typeof p === 'object' ? p.price : 0),
+        quantity: item.quantity,
+        image: typeof p === 'object' ? p.image : ""
+      };
+    });
+  }, [cartData]);
+
+  const totalItems = useMemo(() => cart.length, [cart]);
+
+  const totalPrice = useMemo(() => 
+    cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), 
+  [cart]);
 
   const addMutation = useMutation({
     mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) => 
       api.addToCart(productId, quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
     }
   });
 
   const removeMutation = useMutation({
-    mutationFn: api.removeFromCart,
+    mutationFn: (productId: string) => api.removeFromCart(productId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
   });
 
   const restMutation = useMutation({
-    mutationFn: api.restFromCart,
+    mutationFn: (productId: string) => api.restFromCart(productId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
   });
 
   const clearMutation = useMutation({
-    mutationFn: api.clearCart,
+    mutationFn: () => api.clearCart(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
   });
 
@@ -64,13 +89,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider
       value={{
         cart,
-        addToCart: async (p, q) => { await addMutation.mutateAsync({ productId: p._id, quantity: q }) },
+        addToCart: async (p, q) => { 
+          if (!user) {
+            router.push("/login");
+            return;
+          }
+          try {
+            await addMutation.mutateAsync({ productId: p._id, quantity: q });
+          } catch (e: any) {
+            if (e.message !== "SESSION_EXPIRED") {
+              console.error("Add to cart failed:", e.message);
+            }
+          }
+        },
         removeFromCart: async (id) => { await removeMutation.mutateAsync(id) },
         restFromCart: async (id) => { await restMutation.mutateAsync(id) },
         clearCart: async () => { await clearMutation.mutateAsync() },
-        totalItems: 0, // Calculado desde query data
-        totalPrice: 0,
-        isLoading: addMutation.isPending || removeMutation.isPending
+        totalItems,
+        totalPrice,
+        isLoading: isLoadingCart || addMutation.isPending || removeMutation.isPending
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import Link from "next/link";
-import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -18,6 +19,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   
   const { 
     register, 
@@ -77,10 +79,17 @@ export default function LoginPage() {
                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" size={20} />
                 <input
                   {...register("password")}
-                  type="password"
-                  className={`w-full bg-gray-50 border ${errors.password ? 'border-red-200' : 'border-gray-100'} rounded-2xl py-5 pl-14 pr-5 focus:ring-4 focus:ring-blue-500/10 focus:bg-white outline-none transition-all font-medium text-gray-900 placeholder:text-gray-300`}
+                  type={showPassword ? "text" : "password"}
+                  className={`w-full bg-gray-50 border ${errors.password ? 'border-red-200' : 'border-gray-100'} rounded-2xl py-5 pl-14 pr-14 focus:ring-4 focus:ring-blue-500/10 focus:bg-white outline-none transition-all font-medium text-gray-900 placeholder:text-gray-300`}
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
               {errors.password && <p className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.password.message}</p>}
             </div>

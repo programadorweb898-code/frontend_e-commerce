@@ -5,6 +5,7 @@ import { Order } from "@/types";
 import { api } from "@/lib/api";
 import { Navbar } from "@/components/Navbar";
 import { Package, Clock, CheckCircle, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -24,12 +25,14 @@ export default function OrdersPage() {
     fetchOrders();
   }, []);
 
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-black mb-8">My Orders</h1>
+        <h1 className="text-4xl font-black mb-8">{t("orders.title")}</h1>
 
         {loading ? (
           <div className="space-y-4">
@@ -40,7 +43,7 @@ export default function OrdersPage() {
         ) : orders.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
             <Package size={48} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 text-lg">You haven&apos;t placed any orders yet</p>
+            <p className="text-gray-500 text-lg">{t("orders.empty")}</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -58,10 +61,17 @@ export default function OrdersPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500 font-medium">Total Amount</p>
-                    <p className="text-xl font-black text-gray-900">${order.totalPrice.toFixed(2)}</p>
+                    <p className="text-xl font-black text-gray-900">${order.totalAmount.toFixed(2)}</p>
                   </div>
                 </div>
                 <div className="px-6 py-4 bg-gray-50/50 flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    {order.items.map((item, idx) => (
+                      <span key={idx} className="text-xs text-gray-600 font-medium">
+                        • {item.title} (x{item.quantity})
+                      </span>
+                    ))}
+                  </div>
                   <div className="flex items-center space-x-2">
                     {order.status === "completed" || order.status === "paid" ? (
                       <span className="flex items-center space-x-1 text-green-600 bg-green-50 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
