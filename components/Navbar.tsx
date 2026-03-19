@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { api } from "@/lib/api";
 import Image from "next/image";
 import { ShoppingCart, User, LogOut, Package, Globe, ChevronDown, Home, Phone, HelpCircle, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
