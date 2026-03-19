@@ -10,6 +10,8 @@ vi.mock('lucide-react', () => ({
   Lock: () => <div data-testid="lock-icon" />,
   Loader2: () => <div data-testid="loader-icon" />,
   AlertCircle: () => <div data-testid="alert-icon" />,
+  Eye: () => <div data-testid="eye-icon" />,
+  EyeOff: () => <div data-testid="eyeoff-icon" />,
   ShoppingCart: () => <div data-testid="cart-icon" />,
   Menu: () => <div data-testid="menu-icon" />,
   User: () => <div data-testid="user-icon" />,

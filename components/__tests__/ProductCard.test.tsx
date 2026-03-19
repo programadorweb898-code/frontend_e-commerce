@@ -5,7 +5,7 @@ import { CartContext } from '../../context/CartContext';
 
 const mockProduct = {
   _id: '1',
-  name: 'Producto de Prueba',
+  title: 'Producto de Prueba',
   description: 'Descripción de prueba',
   price: 100,
   category: 'Electrónica',
@@ -30,7 +30,7 @@ describe('ProductCard', () => {
       </CartContext.Provider>
     );
 
-    expect(screen.getByText(mockProduct.name)).toBeDefined();
+    expect(screen.getByText(mockProduct.title)).toBeDefined();
     expect(screen.getByText(mockProduct.category)).toBeDefined();
     expect(screen.getByText('$100.00')).toBeDefined();
   });
