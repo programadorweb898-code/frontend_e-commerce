@@ -4,104 +4,122 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { Navbar } from "@/components/Navbar";
-import { CheckCircle, Loader2, Package, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { CheckCircle, Loader2, LogOut, ShoppingBag } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/translations";
 
 export default function SuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
   const effectRan = useRef(false);
+  const { language } = useLanguage();
+  const t = translations[language].success;
 
   useEffect(() => {
-    if (effectRan.current) return;
+    if (effectRan.current || !sessionId) return;
     
     const confirmOrder = async () => {
       try {
-        // Llamamos al endpoint que convierte el carrito en orden
-        // El sessionId de Stripe nos sirve como referencia del pago exitoso
-        await api.checkout(sessionId || undefined);
+        // Intentar obtener el idioma de la URL, si no, del localStorage (usado por LanguageContext)
+        const lang = searchParams.get("lang") || localStorage.getItem("language") || "es";
+        console.log("Confirmando pedido con idioma:", lang);
+
+        // Confirmar el pago, enviar email y limpiar carrito en el backend
+        await api.confirmPayment(sessionId, lang);
         
-        // Invalidamos el carrito para que se limpie en la UI
+        // Limpiar el estado local del carrito
         queryClient.invalidateQueries({ queryKey: ['cart'] });
         
         setLoading(false);
+        // Mostrar el modal después de un pequeño retraso
+        setTimeout(() => setShowModal(true), 1500);
       } catch (err) {
         console.error("Error al confirmar el pedido:", err);
-        setError(true);
         setLoading(false);
+        // Incluso si hay error de red, mostramos opciones para que el usuario no quede atrapado
+        setShowModal(true);
       }
     };
 
-    if (sessionId) {
-      confirmOrder();
-      effectRan.current = true;
-    } else {
-      setLoading(false);
-    }
+    confirmOrder();
+    effectRan.current = true;
   }, [sessionId, queryClient]);
 
+  const handleLogout = async () => {
+    try {
+      await api.logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+      router.push("/login");
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 relative overflow-hidden">
       <Navbar />
       
       <main className="flex-grow flex items-center justify-center p-4">
-        <div className="bg-white p-12 rounded-[2.5rem] shadow-2xl shadow-blue-100/50 border border-gray-100 w-full max-w-lg text-center">
+        <div className="text-center space-y-8">
           {loading ? (
             <div className="space-y-6">
-              <div className="flex justify-center">
-                <Loader2 className="animate-spin text-blue-600" size={64} />
-              </div>
-              <h1 className="text-3xl font-black text-gray-900 italic">Procesando tu pedido...</h1>
-              <p className="text-gray-500 font-medium">Estamos confirmando tu pago con Stripe y preparando tu orden.</p>
-            </div>
-          ) : error ? (
-            <div className="space-y-6">
-              <div className="flex justify-center text-red-500">
-                <Package size={64} />
-              </div>
-              <h1 className="text-3xl font-black text-gray-900 italic">Algo salió mal</h1>
-              <p className="text-gray-500 font-medium">No pudimos confirmar tu pedido automáticamente. Por favor, contacta a soporte o revisa tu historial de compras.</p>
-              <Link 
-                href="/orders"
-                className="inline-flex items-center space-x-2 text-blue-600 font-black hover:underline"
-              >
-                <span>Ir a mis pedidos</span>
-                <ArrowRight size={20} />
-              </Link>
+              <Loader2 className="animate-spin text-blue-600 mx-auto" size={80} />
+              <h1 className="text-4xl font-black text-gray-900 italic tracking-tighter">
+                {t.processing}
+              </h1>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="flex justify-center text-green-500">
-                <CheckCircle size={64} />
+              <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
+                <CheckCircle size={60} className="text-green-600" />
               </div>
-              <h1 className="text-4xl font-black text-gray-900 italic tracking-tight">¡Gracias por tu compra!</h1>
-              <p className="text-xl text-gray-500 font-medium leading-relaxed">
-                Tu pago ha sido procesado con éxito. Tu pedido está en camino y te hemos enviado un correo con los detalles.
+              <h1 className="text-6xl font-black text-gray-900 italic tracking-tighter mb-4">
+                {t.title}
+              </h1>
+              <p className="text-xl text-gray-500 font-medium max-w-md mx-auto leading-relaxed">
+                {t.description}
               </p>
-              <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
-                  href="/orders"
-                  className="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center space-x-2 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100"
-                >
-                  <Package size={20} />
-                  <span>Ver mis pedidos</span>
-                </Link>
-                <Link 
-                  href="/"
-                  className="bg-gray-100 text-gray-900 px-8 py-4 rounded-2xl font-black flex items-center justify-center hover:bg-gray-200 transition-all"
-                >
-                  Continuar comprando
-                </Link>
-              </div>
             </div>
           )}
         </div>
       </main>
+
+      {/* Modal / Cuadro Emergente */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-gray-100 transform animate-in zoom-in slide-in-from-bottom-10 duration-500">
+            <div className="text-center space-y-8">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black text-gray-900 italic uppercase">{t.modalTitle}</h2>
+                <p className="text-gray-500 font-medium text-lg">{t.modalDescription}</p>
+              </div>
+
+              <div className="grid gap-4">
+                <button 
+                  onClick={() => router.push("/")}
+                  className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl flex items-center justify-center space-x-3 hover:bg-blue-700 transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-200 uppercase italic tracking-tighter"
+                >
+                  <ShoppingBag size={24} />
+                  <span>{t.keepShopping}</span>
+                </button>
+
+                <button 
+                  onClick={handleLogout}
+                  className="w-full bg-gray-100 text-gray-900 py-5 rounded-2xl font-black text-xl flex items-center justify-center space-x-3 hover:bg-gray-200 transition-all transform hover:scale-[1.02] active:scale-95 uppercase italic tracking-tighter"
+                >
+                  <LogOut size={24} />
+                  <span>{t.logout}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

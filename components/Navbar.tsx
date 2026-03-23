@@ -43,10 +43,6 @@ export function Navbar() {
               <Home size={16} className="mr-1" />
               {t("navbar.home")}
             </Link>
-            <Link href="/products" className="flex items-center text-gray-500 px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600">
-              <Package size={16} className="mr-1" />
-              {t("navbar.products")}
-            </Link>
             <button
               onClick={() => setShowPhoneModal(true)}
               className="flex items-center text-gray-500 px-3 py-2 rounded-md text-sm font-medium hover:text-blue-600"
@@ -235,15 +231,15 @@ export function Navbar() {
               <button
                 onClick={async () => {
                   try {
-                    const { url } = await api.createCheckoutSession();
+                    const { url } = await api.createCheckoutSession(language);
                     window.location.href = url;
                   } catch (err) {
                     console.error("Error al iniciar checkout:", err);
                   }
                 }}
-                className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100"
+                className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 uppercase italic tracking-tighter"
               >
-                <span>FINALIZAR COMPRA</span>
+                <span>{t("cart.checkout")}</span>
                 <ArrowRight size={20} />
               </button>
               <button

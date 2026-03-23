@@ -39,6 +39,11 @@ export default function Home() {
     { id: "home", label: t("products.home") },
   ];
 
+  const getRandomProducts = (products: any[], count: number) => {
+    const shuffled = [...products].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -142,6 +147,30 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Más Vendidos Section */}
+      <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h2 className="text-3xl font-black text-zinc-900">Más Vendidos</h2>
+            <p className="text-zinc-600 mt-2">Descubre nuestros productos más populares</p>
+          </div>
+          
+          {products && (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
+              <div className="overflow-x-auto">
+                <div className="flex space-x-6 pb-4">
+                  {getRandomProducts(products, 4).map((product) => (
+                    <div key={product._id} className="flex-shrink-0 w-64">
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">

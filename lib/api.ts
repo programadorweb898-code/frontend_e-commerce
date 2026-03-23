@@ -172,8 +172,18 @@ class ApiClient {
   }
 
   // Payments
-  async createCheckoutSession(): Promise<{ url: string }> {
-    return this.fetch<{ url: string }>("/payments/checkout", { method: "POST" });
+  async createCheckoutSession(lang?: string): Promise<{ url: string }> {
+    return this.fetch<{ url: string }>("/payments/checkout", { 
+      method: "POST",
+      body: JSON.stringify({ lang })
+    });
+  }
+
+  async confirmPayment(sessionId: string, lang: string = "es"): Promise<any> {
+    return this.fetch("/payments/confirm-payment", {
+      method: "POST",
+      body: JSON.stringify({ session_id: sessionId, lang }),
+    });
   }
 }
 
