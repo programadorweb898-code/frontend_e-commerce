@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 type Language = "es" | "en";
 
@@ -22,17 +22,14 @@ const defaultContext: LanguageContextType = {
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("es");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    // Load language from localStorage
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === "undefined") return "es";
     const savedLanguage = localStorage.getItem("language") as Language | null;
-    if (savedLanguage && (savedLanguage === "es" || savedLanguage === "en")) {
-      setLanguageState(savedLanguage);
+    if (savedLanguage === "es" || savedLanguage === "en") {
+      return savedLanguage;
     }
-  }, []);
+    return "es";
+  });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -41,11 +38,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = (key: string): string => {
     const keys = key.split(".");
-    let value: any = translations[language];
+    let value: unknown = translations[language];
 
     for (const k of keys) {
-      if (value && typeof value === "object" && k in value) {
-        value = value[k];
+      if (value && typeof value === "object" && Object.prototype.hasOwnProperty.call(value, k)) {
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key; // Return key if translation not found
       }

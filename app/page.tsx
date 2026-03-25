@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { ProductCard } from "@/components/ProductCard";
 import { useLanguage } from "@/context/LanguageContext";
 import { ShoppingBag, TrendingUp, Sparkles, Search, X, Filter } from "lucide-react";
+import { Product } from "@/types";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -39,7 +40,7 @@ export default function Home() {
     { id: "home", label: t("products.home") },
   ];
 
-  const getRandomProducts = (products: any[], count: number) => {
+  const getRandomProducts = (products: Product[], count: number) => {
     const shuffled = [...products].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   };
@@ -216,7 +217,9 @@ export default function Home() {
         ) : isError ? (
           <div className="text-center py-24 bg-red-50 rounded-[3rem] border border-red-100">
             <p className="text-red-500 font-black text-xl mb-4">{t("products.connectionFailed")}</p>
-            <p className="text-red-400 font-medium">{(error as any).message}</p>
+            <p className="text-red-400 font-medium">
+              {error instanceof Error ? error.message : "Request failed"}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

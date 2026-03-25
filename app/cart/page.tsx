@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
 import { api } from "@/lib/api";
 import { translations } from "@/lib/translations";
+import { CartProductInput } from "@/types";
 
 export default function CartPage() {
   const { cart, removeFromCart, restFromCart, addToCart, totalPrice, clearCart } = useCart();
@@ -72,7 +73,15 @@ export default function CartPage() {
                       </button>
                       <span className="font-black text-xl w-8 text-center text-gray-900">{item.quantity}</span>
                       <button 
-                        onClick={() => addToCart({ _id: item.productId, name: item.name, price: item.price, image: item.image } as any, 1)}
+                        onClick={() => {
+                          const product: CartProductInput = {
+                            _id: item.productId,
+                            title: item.name,
+                            price: item.price,
+                            image: item.image
+                          };
+                          addToCart(product, 1);
+                        }}
                         className="p-2 hover:bg-white rounded-xl transition-all shadow-sm active:scale-90"
                       >
                         <Plus size={20} className="text-gray-600" />

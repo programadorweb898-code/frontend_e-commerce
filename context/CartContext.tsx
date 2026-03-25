@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode, useMemo } from "react";
-import { Product, CartItem } from "@/types";
+import { CartApiItem, CartApiResponse, CartItem, CartProductInput } from "@/types";
 import { api } from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./AuthContext";
@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity: number) => Promise<void>;
+  addToCart: (product: CartProductInput, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
   restFromCart: (productId: string) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -36,7 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const router = useRouter();
   
-  const { data: cartData, isLoading: isLoadingCart } = useQuery({
+  const { data: cartData, isLoading: isLoadingCart } = useQuery<CartApiResponse>({
     queryKey: ['cart'],
     queryFn: () => api.getCart(),
     enabled: !!user, // Solo cargar si hay usuario
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const cart = useMemo(() => {
     if (!cartData || !cartData.items) return [];
-    return cartData.items.map((item: any) => {
+    return cartData.items.map((item: CartApiItem) => {
       const p = item.productId;
       return {
         productId: typeof p === 'object' ? p._id : p,
@@ -56,7 +56,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, [cartData]);
 
-  const totalItems = useMemo(() => cart.length, [cart]);
+  const totalItems = useMemo(
+    () => cart.reduce((sum, item) => sum + item.quantity, 0),
+    [cart]
+  );
 
   const totalPrice = useMemo(() => 
     cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), 
@@ -96,9 +99,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
           try {
             await addMutation.mutateAsync({ productId: p._id, quantity: q });
-          } catch (e: any) {
-            if (e.message !== "SESSION_EXPIRED") {
-              console.error("Add to cart failed:", e.message);
+          } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : "Unknown error";
+            if (message !== "SESSION_EXPIRED") {
+              console.error("Add to cart failed:", message);
             }
           }
         },

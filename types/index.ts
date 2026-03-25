@@ -13,7 +13,6 @@ export interface Product {
 export interface User {
   _id: string;
   email: string;
-  role: string;
 }
 
 export interface CartItem {
@@ -23,6 +22,29 @@ export interface CartItem {
   quantity: number;
   image: string;
 }
+
+export interface CartApiItem {
+  productId: string | Product;
+  quantity: number;
+  priceSnapShot: number;
+}
+
+export interface CartApiResponse {
+  items: CartApiItem[];
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export type CartProductInput = Pick<Product, "_id" | "title" | "price" | "image">;
 
 export interface Order {
   _id: string;

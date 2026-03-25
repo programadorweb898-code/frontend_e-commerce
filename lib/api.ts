@@ -1,4 +1,4 @@
-import { Product, User, CartItem, Order } from "@/types";
+import { Product, User, Order, LoginCredentials, RegisterPayload, CartApiResponse } from "@/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -59,8 +59,12 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      const errorMessage = error.message || error.error || response.statusText || "Request failed";
+      const error: Record<string, unknown> = await response.json().catch(() => ({}));
+      const errorMessage =
+        (typeof error.message === "string" && error.message) ||
+        (typeof error.error === "string" && error.error) ||
+        response.statusText ||
+        "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -113,7 +117,7 @@ class ApiClient {
     return this.fetch<User>("/api/me");
   }
 
-  async login(credentials: any): Promise<{ accessToken: string; message: string }> {
+  async login(credentials: LoginCredentials): Promise<{ accessToken: string; message: string }> {
     const data = await this.fetch<{ accessToken: string; message: string }>("/api/login", {
       method: "POST",
       body: JSON.stringify(credentials),
@@ -122,7 +126,7 @@ class ApiClient {
     return data;
   }
 
-  async register(data: any): Promise<any> {
+  async register(data: RegisterPayload): Promise<Record<string, unknown>> {
     return this.fetch("/api/register", {
       method: "POST",
       body: JSON.stringify(data),
@@ -135,27 +139,27 @@ class ApiClient {
   }
 
   // Cart
-  async getCart(): Promise<any> {
-    return this.fetch("/products/getCart");
+  async getCart(): Promise<CartApiResponse> {
+    return this.fetch<CartApiResponse>("/products/getCart");
   }
 
-  async addToCart(productId: string, quantity: number): Promise<any> {
-    return this.fetch("/products/addProduct", {
+  async addToCart(productId: string, quantity: number): Promise<CartApiResponse> {
+    return this.fetch<CartApiResponse>("/products/addProduct", {
       method: "POST",
       body: JSON.stringify({ productId, quantity }),
     });
   }
 
-  async removeFromCart(productId: string): Promise<any> {
-    return this.fetch(`/products/deleteProduct/${productId}`, { method: "DELETE" });
+  async removeFromCart(productId: string): Promise<CartApiResponse> {
+    return this.fetch<CartApiResponse>(`/products/deleteProduct/${productId}`, { method: "DELETE" });
   }
 
-  async restFromCart(productId: string): Promise<any> {
-    return this.fetch(`/products/restProduct/${productId}`, { method: "PATCH" });
+  async restFromCart(productId: string): Promise<CartApiResponse> {
+    return this.fetch<CartApiResponse>(`/products/restProduct/${productId}`, { method: "PATCH" });
   }
 
-  async clearCart(): Promise<any> {
-    return this.fetch("/products/deleteCart", { method: "DELETE" });
+  async clearCart(): Promise<Record<string, unknown>> {
+    return this.fetch<Record<string, unknown>>("/products/deleteCart", { method: "DELETE" });
   }
 
   // Orders
@@ -164,8 +168,8 @@ class ApiClient {
     return data.orders || [];
   }
 
-  async checkout(paymentIntentId?: string): Promise<any> {
-    return this.fetch("/api/orders/checkout", {
+  async checkout(paymentIntentId?: string): Promise<Record<string, unknown>> {
+    return this.fetch<Record<string, unknown>>("/api/orders/checkout", {
       method: "POST",
       body: JSON.stringify({ paymentIntentId }),
     });
@@ -179,8 +183,8 @@ class ApiClient {
     });
   }
 
-  async confirmPayment(sessionId: string, lang: string = "es"): Promise<any> {
-    return this.fetch("/payments/confirm-payment", {
+  async confirmPayment(sessionId: string, lang: string = "es"): Promise<Record<string, unknown>> {
+    return this.fetch<Record<string, unknown>>("/payments/confirm-payment", {
       method: "POST",
       body: JSON.stringify({ session_id: sessionId, lang }),
     });

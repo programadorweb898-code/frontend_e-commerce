@@ -1,7 +1,7 @@
 "use client";
 
 import { Navbar } from "@/components/Navbar";
-import { XCircle, ShoppingCart, ArrowLeft } from "lucide-react";
+import { XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function CancelPage() {

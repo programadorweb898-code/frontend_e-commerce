@@ -1,15 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@/types";
+import { User, LoginCredentials, RegisterPayload } from "@/types";
 import { api } from "@/lib/api";
 import { useRouter, usePathname } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (credentials: any) => Promise<void>;
-  register: (data: any) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterPayload) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -71,14 +71,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, [router, pathname, loading]);
 
-  const login = async (credentials: any) => {
-    const data = await api.login(credentials);
+  const login = async (credentials: LoginCredentials) => {
+    await api.login(credentials);
     const userData = await api.getMe();
     setUser(userData);
     router.push("/");
   };
 
-  const register = async (data: any) => {
+  const register = async (data: RegisterPayload) => {
     await api.register(data);
     router.push("/login");
   };

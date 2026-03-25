@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { api } from "@/lib/api";
 import Image from "next/image";
 import { ShoppingCart, User, LogOut, Package, Globe, ChevronDown, Home, Phone, HelpCircle, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
+import { CartProductInput } from "@/types";
 import { useState, useEffect } from "react";
 
 export function Navbar() {
@@ -205,7 +206,15 @@ export function Navbar() {
                         </button>
                         <span className="text-sm font-bold w-6 text-center">{item.quantity}</span>
                         <button 
-                          onClick={() => addToCart({ _id: item.productId, title: item.name, price: item.price, image: item.image } as any, 1)}
+                          onClick={() => {
+                            const product: CartProductInput = {
+                              _id: item.productId,
+                              title: item.name,
+                              price: item.price,
+                              image: item.image
+                            };
+                            addToCart(product, 1);
+                          }}
                           className="p-1 hover:bg-white rounded-md shadow-sm transition-all"
                         >
                           <Plus size={14} />

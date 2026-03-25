@@ -52,7 +52,7 @@ export default function LoginPage() {
             {mutation.isError && (
               <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center space-x-2">
                 <AlertCircle size={18} />
-                <span>{(mutation.error as any).message || "Invalid credentials"}</span>
+                <span>{mutation.error instanceof Error ? mutation.error.message : "Invalid credentials"}</span>
               </div>
             )}
             

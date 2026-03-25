@@ -113,6 +113,7 @@ export const translations = {
       logoutConfirmMessage: "Are you sure you want to sign out?",
       confirm: "Confirm",
       cancel: "Cancel",
+      searchPlaceholder: "Search products...",
     },
     hero: {
       badge: "New Collection 2026",
@@ -136,6 +137,8 @@ export const translations = {
       noProducts: "No products found",
       noProductsDesc: "Check back later for our new arrivals.",
       connectionFailed: "Connection Failed",
+      minPrice: "Min",
+      maxPrice: "Max",
     },
     footer: {
       description:

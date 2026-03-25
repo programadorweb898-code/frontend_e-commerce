@@ -4,13 +4,12 @@ import CartPage from '../page';
 import { useCart } from '@/context/CartContext';
 import { api } from '@/lib/api';
 
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: any) => <img {...props} alt={props.alt || 'image'} />,
-}));
-
 vi.mock('@/components/Navbar', () => ({
   Navbar: () => <div data-testid="mock-navbar">Navbar</div>,
+}));
+
+vi.mock('@/context/LanguageContext', () => ({
+  useLanguage: () => ({ language: 'es' }),
 }));
 
 vi.mock('lucide-react', () => ({
@@ -18,6 +17,7 @@ vi.mock('lucide-react', () => ({
   Plus: () => <div data-testid="plus-icon" />,
   Minus: () => <div data-testid="minus-icon" />,
   ArrowRight: () => <div data-testid="arrow-right-icon" />,
+  ShoppingBag: () => <div data-testid="shopping-bag-icon" />,
 }));
 
 vi.mock('@/lib/api', () => ({
@@ -52,8 +52,8 @@ describe('CartPage', () => {
 
     render(<CartPage />);
 
-    expect(screen.getByText(/Your cart is empty/i)).toBeDefined();
-    expect(screen.getByText(/Continue Shopping/i)).toBeDefined();
+    expect(screen.getByText(/Tu carrito está vacío/i)).toBeDefined();
+    expect(screen.getByText(/Continuar Comprando/i)).toBeDefined();
   });
 
   it('muestra elementos del carrito y cumple acciones', async () => {
@@ -92,14 +92,14 @@ describe('CartPage', () => {
     expect(screen.getByText(product.name)).toBeDefined();
     const priceElements = screen.getAllByText('$100.00');
     expect(priceElements.length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/Order Summary/i)).toBeDefined();
+    expect(screen.getByText(/Resumen/i)).toBeDefined();
 
-    fireEvent.click(screen.getByText(/Clear entire cart/i));
+    fireEvent.click(screen.getByText(/Vaciar todo el carrito/i));
     expect(mockClearCart).toHaveBeenCalledTimes(1);
 
     const minusButton = screen.getByTestId('minus-icon').closest('button');
     const plusButton = screen.getByTestId('plus-icon').closest('button');
-    const trashButton = screen.getByTestId('trash-icon').closest('button');
+    const trashButton = screen.getAllByTestId('trash-icon')[0]?.closest('button');
 
     if (minusButton) fireEvent.click(minusButton);
     if (plusButton) fireEvent.click(plusButton);
@@ -108,14 +108,14 @@ describe('CartPage', () => {
     expect(mockRestFromCart).toHaveBeenCalledWith(product.productId);
     expect(mockAddToCart).toHaveBeenCalledWith({
       _id: product.productId,
-      name: product.name,
+      title: product.name,
       price: product.price,
       image: product.image,
     },
     1);
     expect(mockRemoveFromCart).toHaveBeenCalledWith(product.productId);
 
-    fireEvent.click(screen.getByText(/Proceed to Checkout/i));
+    fireEvent.click(screen.getByText(/Finalizar Compra/i));
 
     await waitFor(() => {
       expect(mockedCreateCheckoutSession).toHaveBeenCalledTimes(1);

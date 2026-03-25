@@ -48,7 +48,7 @@ export default function SuccessPage() {
 
     confirmOrder();
     effectRan.current = true;
-  }, [sessionId, queryClient]);
+  }, [sessionId, queryClient, searchParams]);
 
   const handleLogout = async () => {
     try {
