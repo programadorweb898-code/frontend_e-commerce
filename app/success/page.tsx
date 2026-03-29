@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { Navbar } from "@/components/Navbar";
 import { CheckCircle, Loader2, LogOut, ShoppingBag } from "lucide-react";
@@ -13,8 +13,6 @@ export const dynamic = "force-dynamic";
 
 export default function SuccessPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
@@ -23,14 +21,24 @@ export default function SuccessPage() {
   const t = translations[language].success;
 
   useEffect(() => {
-    if (effectRan.current || !sessionId) return;
-    
+    if (effectRan.current) return;
+    effectRan.current = true;
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const lang = params.get("lang") || localStorage.getItem("language") || "es";
+
+    if (!sessionId) {
+      setLoading(false);
+      setShowModal(true);
+      return;
+    }
+
     const confirmOrder = async () => {
       try {
-        const lang = searchParams.get("lang") || localStorage.getItem("language") || "es";
         await api.confirmPayment(sessionId, lang);
         queryClient.invalidateQueries({ queryKey: ['cart'] });
-        
+
         setLoading(false);
         setTimeout(() => setShowModal(true), 1500);
       } catch (err) {
@@ -41,8 +49,7 @@ export default function SuccessPage() {
     };
 
     confirmOrder();
-    effectRan.current = true;
-  }, [sessionId, queryClient, searchParams]);
+  }, [queryClient]);
 
   const handleLogout = async () => {
     try {
