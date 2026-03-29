@@ -25,23 +25,15 @@ export default function SuccessPage() {
     
     const confirmOrder = async () => {
       try {
-        // Intentar obtener el idioma de la URL, si no, del localStorage (usado por LanguageContext)
         const lang = searchParams.get("lang") || localStorage.getItem("language") || "es";
-        console.log("Confirmando pedido con idioma:", lang);
-
-        // Confirmar el pago, enviar email y limpiar carrito en el backend
         await api.confirmPayment(sessionId, lang);
-        
-        // Limpiar el estado local del carrito
         queryClient.invalidateQueries({ queryKey: ['cart'] });
         
         setLoading(false);
-        // Mostrar el modal después de un pequeño retraso
         setTimeout(() => setShowModal(true), 1500);
       } catch (err) {
         console.error("Error al confirmar el pedido:", err);
         setLoading(false);
-        // Incluso si hay error de red, mostramos opciones para que el usuario no quede atrapado
         setShowModal(true);
       }
     };
@@ -89,7 +81,6 @@ export default function SuccessPage() {
         </div>
       </main>
 
-      {/* Modal / Cuadro Emergente */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border border-gray-100 transform animate-in zoom-in slide-in-from-bottom-10 duration-500">
