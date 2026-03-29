@@ -9,6 +9,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
+export const dynamic = "force-dynamic";
+
 export default function SuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
