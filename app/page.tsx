@@ -79,7 +79,7 @@ export default function Home() {
             <Sparkles size={20} />
             <span className="font-black uppercase tracking-[0.3em] text-xs">{t("hero.badge")}</span>
           </div>
-          <h1 className="text-6xl sm:text-8xl font-black tracking-tighter mb-8 max-w-4xl leading-[0.9]">
+          <h1 className="text-[3rem] sm:text-[3rem] font-black tracking-tighter mb-8 max-w-4xl leading-[1.1] sm:leading-[0.9]">
             {t("hero.title")} <span className="text-blue-600 italic">{t("hero.titleHighlight")}</span> {t("hero.titleEnd")}
           </h1>
           
