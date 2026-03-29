@@ -23,7 +23,7 @@ export default function Home() {
       let finalSearch = searchTerm;
       if (activeCategory !== "all" && !searchTerm) {
         const categoryMap: Record<string, string> = {
-          'apparel': 'clothing', // Esto buscará men's clothing y women's clothing
+          'apparel': 'clothing',
           'tech': 'electronics',
           'home': 'jewelery'
         };
@@ -49,7 +49,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       
-      {/* Modal de Nuestra Visión */}
       {isVisionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] p-8 max-w-lg w-full relative shadow-2xl animate-in fade-in zoom-in duration-300">
@@ -73,7 +72,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Hero Section */}
       <header className="bg-zinc-950 text-white py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
         <div className="max-w-7xl mx-auto relative z-10">
@@ -85,7 +83,6 @@ export default function Home() {
             {t("hero.title")} <span className="text-blue-600 italic">{t("hero.titleHighlight")}</span> {t("hero.titleEnd")}
           </h1>
           
-          {/* Controles de Búsqueda y Filtro */}
           <div className="flex flex-col md:flex-row gap-4 max-w-3xl mb-12">
             <div className="relative flex-grow">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
@@ -149,7 +146,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Más Vendidos Section */}
       <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">

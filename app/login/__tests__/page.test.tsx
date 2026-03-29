@@ -4,7 +4,6 @@ import LoginPage from '../page';
 import { AuthContext } from '../../../context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Mock de lucide-react (opcional, Vitest suele manejarlo bien pero ayuda a evitar warnings)
 vi.mock('lucide-react', () => ({
   Mail: () => <div data-testid="mail-icon" />,
   Lock: () => <div data-testid="lock-icon" />,
@@ -20,7 +19,6 @@ vi.mock('lucide-react', () => ({
   Search: () => <div data-testid="search-icon" />,
 }));
 
-// Mock de Navbar para simplificar el test de la página
 vi.mock('@/components/Navbar', () => ({
   Navbar: () => <nav data-testid="mock-navbar">Navbar</nav>,
 }));

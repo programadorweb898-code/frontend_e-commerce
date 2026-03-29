@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Configurar el callback de no autorizado
+    // Mantener el estado local alineado con expiraciones del backend y rutas privadas.
     api.setOnUnauthorized(() => {
       setUser(null);
       localStorage.removeItem("accessToken");
@@ -40,7 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       const token = localStorage.getItem("accessToken");
       
-      // 1. Verificación inicial de carga (solo una vez)
       if (loading) {
         try {
           if (token) {
@@ -61,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // 2. Protección de rutas (en cada cambio de pathname)
       const privateRoutes = ["/cart", "/orders"];
       if (privateRoutes.includes(pathname) && !token) {
         router.push("/login");

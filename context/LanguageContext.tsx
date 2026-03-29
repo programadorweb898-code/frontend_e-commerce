@@ -14,7 +14,6 @@ import { translations } from "@/lib/translations";
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Default value when provider is not available
 const defaultContext: LanguageContextType = {
   language: "es",
   setLanguage: () => {},
@@ -44,7 +43,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       if (value && typeof value === "object" && Object.prototype.hasOwnProperty.call(value, k)) {
         value = (value as Record<string, unknown>)[k];
       } else {
-        return key; // Return key if translation not found
+        return key;
       }
     }
 

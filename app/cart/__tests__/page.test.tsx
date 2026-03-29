@@ -47,6 +47,8 @@ describe('CartPage', () => {
       restFromCart: vi.fn(),
       addToCart: vi.fn(),
       totalPrice: 0,
+      totalItems: 0,
+      isLoading: false,
       clearCart: vi.fn(),
     });
 
@@ -75,12 +77,13 @@ describe('CartPage', () => {
       restFromCart: mockRestFromCart,
       addToCart: mockAddToCart,
       totalPrice: 100,
+      totalItems: 2,
+      isLoading: false,
       clearCart: mockClearCart,
     });
 
     mockedCreateCheckoutSession.mockResolvedValue({ url: 'https://checkout.example.com' });
 
-    // `window.location` escritura es peligrosa, por eso escapamos.
     const oldLocation = window.location;
     Object.defineProperty(window, 'location', {
       writable: true,

@@ -42,11 +42,10 @@ class ApiClient {
     const response = await fetch(url, {
       ...options,
       headers,
-      credentials: "include", // Important for cookies
+      credentials: "include",
     });
 
     if (response.status === 401 && endpoint !== "/api/login") {
-      // Try to refresh token
       const refreshed = await this.refreshToken();
       if (refreshed) {
         return this.fetch<T>(endpoint, options);
@@ -90,7 +89,6 @@ class ApiClient {
     return false;
   }
 
-  // Products
   async getProducts(search?: string, min?: number, max?: number): Promise<Product[]> {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -112,7 +110,6 @@ class ApiClient {
     return data.productos;
   }
 
-  // Auth
   async getMe(): Promise<User> {
     return this.fetch<User>("/api/me");
   }
@@ -138,7 +135,6 @@ class ApiClient {
     this.setAccessToken(null);
   }
 
-  // Cart
   async getCart(): Promise<CartApiResponse> {
     return this.fetch<CartApiResponse>("/products/getCart");
   }
@@ -162,7 +158,6 @@ class ApiClient {
     return this.fetch<Record<string, unknown>>("/products/deleteCart", { method: "DELETE" });
   }
 
-  // Orders
   async getOrders(): Promise<Order[]> {
     const data = await this.fetch<{ orders: Order[] }>("/api/orders");
     return data.orders || [];
@@ -175,7 +170,6 @@ class ApiClient {
     });
   }
 
-  // Payments
   async createCheckoutSession(lang?: string): Promise<{ url: string }> {
     return this.fetch<{ url: string }>("/payments/checkout", { 
       method: "POST",

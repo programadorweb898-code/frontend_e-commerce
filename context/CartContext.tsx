@@ -39,7 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const { data: cartData, isLoading: isLoadingCart } = useQuery<CartApiResponse>({
     queryKey: ['cart'],
     queryFn: () => api.getCart(),
-    enabled: !!user, // Solo cargar si hay usuario
+    enabled: !!user,
   });
 
   const cart = useMemo(() => {

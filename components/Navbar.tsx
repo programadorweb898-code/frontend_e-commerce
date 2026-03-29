@@ -19,7 +19,6 @@ export function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // Bloquear scroll cuando el drawer esté abierto
   useEffect(() => {
     if (isDrawerOpen) {
       document.body.style.overflow = 'hidden';
@@ -58,7 +57,6 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* Language Selector */}
             <div className="relative">
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
@@ -133,7 +131,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Cart Drawer (Offcanvas) con efecto Slide */}
       <div 
         className={`fixed inset-0 z-[100] transition-opacity duration-300 ${isDrawerOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
       >
