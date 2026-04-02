@@ -9,6 +9,7 @@ import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
 import { api } from "@/lib/api";
 import { translations } from "@/lib/translations";
 import { CartProductInput } from "@/types";
+import { resolveImageUrl } from "@/lib/image";
 
 export default function CartPage() {
   const { cart, removeFromCart, restFromCart, addToCart, totalPrice, clearCart } = useCart();
@@ -51,7 +52,7 @@ export default function CartPage() {
                 <div key={item.productId} className="bg-white p-8 rounded-[2rem] shadow-xl shadow-gray-200/40 border border-gray-50 flex items-center space-x-8 group hover:border-blue-100 transition-all">
                   <div className="relative h-32 w-32 flex-shrink-0 bg-gray-50 rounded-[1.5rem] overflow-hidden shadow-inner">
                     <Image
-                      src={item.image || "/placeholder.png"}
+                      src={resolveImageUrl(item.image)}
                       alt={item.name}
                       fill
                       sizes="128px"

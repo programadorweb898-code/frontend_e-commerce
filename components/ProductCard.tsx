@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart } from "lucide-react";
+import { resolveImageUrl } from "@/lib/image";
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative h-64 w-full bg-gray-50 overflow-hidden flex items-center justify-center">
         <div className="relative h-1/2 w-1/2">
           <Image
-            src={product.image || "/placeholder.png"}
+            src={resolveImageUrl(product.image)}
             alt={product.title}
             fill
             className="object-contain group-hover:scale-105 transition-transform duration-300"

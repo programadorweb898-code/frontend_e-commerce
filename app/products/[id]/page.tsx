@@ -8,6 +8,7 @@ import { Navbar } from "@/components/Navbar";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { resolveImageUrl } from "@/lib/image";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -52,7 +53,7 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
           <div className="relative aspect-square bg-gray-50 rounded-3xl overflow-hidden shadow-sm border border-gray-100">
             <Image
-              src={product.image || "/placeholder.png"}
+              src={resolveImageUrl(product.image)}
               alt={product.title}
               fill
               className="object-contain p-8"
