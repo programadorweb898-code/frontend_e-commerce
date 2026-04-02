@@ -9,6 +9,7 @@ import Image from "next/image";
 import { ShoppingCart, User, LogOut, Package, Globe, ChevronDown, Home, Phone, HelpCircle, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 import { CartProductInput } from "@/types";
 import { useState, useEffect } from "react";
+import { resolveImageUrl } from "@/lib/image";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -100,6 +101,7 @@ export function Navbar() {
 
             <button
               onClick={() => setIsDrawerOpen(true)}
+              aria-label="Open cart"
               className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors group"
             >
               <ShoppingCart size={24} />
@@ -177,7 +179,7 @@ export function Navbar() {
                   <div key={item.productId} className="flex gap-4 items-start group">
                     <div className="relative h-20 w-20 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
                       <Image
-                        src={item.image || "/placeholder.png"}
+                        src={resolveImageUrl(item.image)}
                         alt={item.name}
                         fill
                         className="object-contain p-2"

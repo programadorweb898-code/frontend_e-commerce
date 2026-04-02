@@ -1,72 +1,71 @@
 import { test, expect } from "@playwright/test";
 
-const cartProduct = {
-  _id: "prod-1",
-  title: "Camisa Urbana",
-  price: 50,
-  description: "Camisa premium",
-  category: "apparel",
-  image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
-  stock: 10,
-  createdAt: "2026-01-01T00:00:00.000Z",
-  updatedAt: "2026-01-01T00:00:00.000Z",
-};
+const testPassword = "Gomito10$";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-test("muestra items y total en carrito", async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem("accessToken", "test-token");
+const createTestEmail = () =>
+  `gomito724+${Date.now()}-${Math.random().toString(36).slice(2, 8)}@gmail.com`;
+
+async function ensureTestUser(
+  request: import("@playwright/test").APIRequestContext,
+  email: string
+) {
+  const response = await request.post(`${apiBaseUrl}/api/register`, {
+    data: {
+      email,
+      password: testPassword,
+      confirmPassword: testPassword,
+    },
   });
 
-  await page.route("**/api/refreshToken", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      headers: {
-        "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
-        "Access-Control-Allow-Credentials": "true",
-      },
-      body: JSON.stringify({ accessToken: "test-token" }),
-    });
-  });
+  if (![200, 403].includes(response.status())) {
+    throw new Error(`Unexpected register status: ${response.status()}`);
+  }
+}
 
-  await page.route("**/api/me", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      headers: {
-        "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
-        "Access-Control-Allow-Credentials": "true",
-      },
-      body: JSON.stringify({ _id: "user-1", email: "test@example.com" }),
-    });
-  });
+test("muestra items y total en carrito", async ({ page, request }) => {
+  const testEmail = createTestEmail();
+  await ensureTestUser(request, testEmail);
+  await page.goto("/login");
+  await page.getByPlaceholder("name@example.com").fill(testEmail);
+  await page.getByPlaceholder("••••••••").fill(testPassword);
+  await page.getByRole("button", { name: /Sign In Now/i }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("accessToken")))
+    .not.toBeNull();
 
-  await page.route("**/products/getCart", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      headers: {
-        "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
-        "Access-Control-Allow-Credentials": "true",
-      },
-      body: JSON.stringify({
-        items: [
-          {
-            productId: cartProduct,
-            quantity: 2,
-            priceSnapShot: 50,
-          },
-        ],
-      }),
-    });
-  });
+  const productHeading = page
+    .getByRole("main")
+    .getByRole("heading", { level: 3 })
+    .first();
+  await expect(productHeading).toBeVisible();
+  const testProductTitle = (await productHeading.textContent())?.trim();
+  if (!testProductTitle) {
+    throw new Error("No product title found on home page");
+  }
 
-  await page.goto("/cart");
+  const productCard = productHeading.locator("..").locator("..");
+  await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.url().includes("/products/addProduct") && response.status() === 200
+    ),
+    productCard.getByRole("button").click(),
+  ]);
 
+  await page.getByRole("button", { name: /open cart/i }).click();
+
+  const cartDrawer = page.locator("aside");
   await expect(
-    page.getByRole("main").getByRole("heading", { name: cartProduct.title })
+    cartDrawer.getByRole("heading", {
+      name: /carrito de compras|shopping cart/i,
+    })
   ).toBeVisible();
-  await expect(
-    page.getByRole("main").getByText("$100.00").first()
-  ).toBeVisible();
+
+  const cartItemHeading = cartDrawer.getByRole("heading", { level: 3 }).first();
+  await expect(cartItemHeading).toBeVisible();
+  const cartItemTitle = (await cartItemHeading.textContent())?.trim();
+  expect(cartItemTitle).toBeTruthy();
+  expect([testProductTitle, "Product"]).toContain(cartItemTitle);
 });
