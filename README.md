@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Frontend
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-20232a?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-Testing-6E9F18?logo=vitest&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)
 
-First, run the development server:
+Frontend de una tienda online construido con Next.js. La aplicacion consume una API externa para autenticacion, catalogo de productos, carrito, ordenes y checkout.
+
+## Enlaces
+
+- Repositorio frontend: `https://github.com/programadorweb898-code/frontend_e-commerce`
+- API backend: `https://backend-e-commerce-wekg.onrender.com`
+- Deploy frontend: configurado en Vercel mediante GitHub Actions
+
+## Caracteristicas
+
+- Catalogo de productos con busqueda y filtros por precio
+- Registro e inicio de sesion
+- Carrito de compras con persistencia por usuario
+- Visualizacion de ordenes
+- Internacionalizacion basica en espanol e ingles
+- Tests unitarios/integración con Vitest
+- Tests end-to-end con Playwright
+- CI/CD con GitHub Actions y despliegue en Vercel
+
+## Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- TanStack Query
+- Vitest
+- Playwright
+- Tailwind CSS
+
+## Requisitos
+
+- Node.js 20 o superior
+- npm
+
+## Variables de entorno
+
+Crea un archivo `.env.local` en la raiz del proyecto:
+
+```env
+NEXT_PUBLIC_API_URL=https://backend-e-commerce-wekg.onrender.com
+```
+
+Si estas trabajando con un backend local, podes cambiarlo por:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+## Instalacion
+
+```bash
+npm install
+```
+
+## Ejecutar en desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicacion queda disponible en `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts disponibles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm test
+npm run test:e2e
+```
 
-## Learn More
+## Testing
 
-To learn more about Next.js, take a look at the following resources:
+### Tests unitarios e integracion
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Tests end-to-end
 
-## Deploy on Vercel
+```bash
+npm run test:e2e
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Los tests E2E usan Playwright y necesitan que el frontend pueda conectarse a una API valida mediante `NEXT_PUBLIC_API_URL`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## CI/CD
+
+El workflow principal esta en `.github/workflows/ci-cd.yml` y ejecuta:
+
+1. Tests unitarios e integración con Vitest
+2. Tests E2E con Playwright
+3. Deploy a produccion en Vercel si el push a `main` pasa todos los tests
+4. Deploy preview en pull requests
+
+## Estructura principal
+
+```text
+app/                Rutas y paginas de Next.js
+components/         Componentes reutilizables
+context/            Contextos globales
+lib/                Cliente API, utilidades y configuracion
+tests/e2e/          Tests end-to-end con Playwright
+.github/workflows/  Pipelines de GitHub Actions
+```
+
+## Deploy
+
+El proyecto esta preparado para desplegarse en Vercel mediante GitHub Actions. Para que el deploy funcione correctamente, el repositorio necesita estos secretos:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+El backend utilizado por defecto en CI y en entornos compartidos es:
+
+```text
+https://backend-e-commerce-wekg.onrender.com
+```
+
+## Notas
+
+- El frontend depende de un backend externo para autenticacion y operaciones del carrito.
+- Si los tests E2E fallan en CI, revisa primero que `NEXT_PUBLIC_API_URL` apunte a una API accesible desde GitHub Actions.
