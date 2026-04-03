@@ -27,6 +27,8 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: https://backend-e-commerce-wekg.onrender.com
     steps:
       - name: Checkout
         uses: actions/checkout@v4
