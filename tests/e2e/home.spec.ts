@@ -7,7 +7,9 @@ test("muestra hero y productos", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: /ELEVA TU/i })).toBeVisible();
   await page.getByPlaceholder("Buscar productos...").fill(testProductTitle);
-  await expect(
-    page.getByRole("main").getByRole("heading", { name: testProductTitle })
-  ).toBeVisible();
+
+  const productHeadings = page.getByRole("main").getByRole("heading", { level: 3 });
+  await expect(productHeadings.first()).toBeVisible();
+  await expect(productHeadings).toHaveCount(1);
+  await expect(productHeadings.first()).toContainText(/mens|slim fit/i);
 });
