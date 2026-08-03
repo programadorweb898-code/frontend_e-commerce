@@ -68,19 +68,71 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addMutation = useMutation({
     mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) => 
       api.addToCart(productId, quantity),
-    onSuccess: () => {
+    onMutate: async (newItem) => {
+      await queryClient.cancelQueries({ queryKey: ['cart'] });
+      const previousCart = queryClient.getQueryData<CartApiResponse>(['cart']);
+      
+      queryClient.setQueryData<CartApiResponse>(['cart'], (old) => {
+        if (!old) return { items: [] };
+        const items = [...old.items];
+        const index = items.findIndex(item => 
+          (typeof item.productId === 'object' ? item.productId._id : item.productId) === newItem.productId
+        );
+        if (index > -1) {
+          items[index] = { ...items[index], quantity: items[index].quantity + newItem.quantity };
+        }
+        return { ...old, items };
+      });
+      return { previousCart };
+    },
+    onError: (err, newItem, context) => {
+      queryClient.setQueryData(['cart'], context?.previousCart);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     }
   });
 
   const removeMutation = useMutation({
     mutationFn: (productId: string) => api.removeFromCart(productId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: ['cart'] });
+      const previousCart = queryClient.getQueryData<CartApiResponse>(['cart']);
+      queryClient.setQueryData<CartApiResponse>(['cart'], (old) => {
+        if (!old) return { items: [] };
+        return { ...old, items: old.items.filter(item => 
+          (typeof item.productId === 'object' ? item.productId._id : item.productId) !== productId
+        )};
+      });
+      return { previousCart };
+    },
+    onError: (err, productId, context) => {
+      queryClient.setQueryData(['cart'], context?.previousCart);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
   });
 
   const restMutation = useMutation({
     mutationFn: (productId: string) => api.restFromCart(productId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey: ['cart'] });
+      const previousCart = queryClient.getQueryData<CartApiResponse>(['cart']);
+      queryClient.setQueryData<CartApiResponse>(['cart'], (old) => {
+        if (!old) return { items: [] };
+        return { ...old, items: old.items.map(item => {
+          const id = typeof item.productId === 'object' ? item.productId._id : item.productId;
+          if (id === productId) {
+            return { ...item, quantity: Math.max(0, item.quantity - 1) };
+          }
+          return item;
+        }).filter(item => item.quantity > 0)};
+      });
+      return { previousCart };
+    },
+    onError: (err, productId, context) => {
+      queryClient.setQueryData(['cart'], context?.previousCart);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['cart'] })
   });
 
   const clearMutation = useMutation({
