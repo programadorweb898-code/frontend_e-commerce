@@ -51,7 +51,7 @@ export default function ProductDetailPage() {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-          <div className="relative w-1/2 aspect-square bg-gray-50 rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+          <div className="relative w-1/2 mx-auto aspect-square bg-gray-50 rounded-3xl overflow-hidden shadow-sm border border-gray-100">
             <Image
               src={resolveImageUrl(product.image)}
               alt={product.title}
@@ -73,7 +73,7 @@ export default function ProductDetailPage() {
               </p>
               
               <div className="prose prose-blue mb-10">
-                <p className="text-gray-500 leading-relaxed" style={{ fontSize: "1.5rem" }}>
+                <p className="text-base text-gray-500 leading-relaxed">
                   {product.description}
                 </p>
               </div>
