@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Order } from "@/types";
 import { api } from "@/lib/api";
-import { Navbar } from "@/components/Navbar";
 import { Package, Clock, CheckCircle, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -29,7 +28,6 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
       
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-black mb-8">{t("orders.title")}</h1>

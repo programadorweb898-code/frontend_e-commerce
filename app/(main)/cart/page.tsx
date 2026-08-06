@@ -2,7 +2,6 @@
 
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { Navbar } from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from "lucide-react";
@@ -27,7 +26,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 relative overflow-hidden">
-      <Navbar />
       
       <main className="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         <h1 className="text-6xl font-black mb-12 italic tracking-tighter text-gray-900">{t.title}</h1>

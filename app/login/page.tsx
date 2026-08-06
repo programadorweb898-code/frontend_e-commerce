@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
-import { Navbar } from "@/components/Navbar";
 import Link from "next/link";
 import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
@@ -39,7 +38,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
-      <Navbar />
       
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl shadow-blue-100/50 border border-gray-100 w-full max-w-md transform transition-all">

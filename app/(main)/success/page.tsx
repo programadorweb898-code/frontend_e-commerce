@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Navbar } from "@/components/Navbar";
 import { CheckCircle, Loader2, LogOut, ShoppingBag } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/context/LanguageContext";

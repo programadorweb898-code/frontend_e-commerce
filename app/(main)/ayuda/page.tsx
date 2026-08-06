@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
 
 export default function AyudaPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
       <main className="mx-auto max-w-4xl px-4 py-10 w-full">
         <h1 className="text-3xl font-bold mb-6">Ayuda</h1>
         <p className="mb-8 text-gray-700">Encuentra respuestas a las preguntas más frecuentes sobre tu experiencia de compra.</p>
