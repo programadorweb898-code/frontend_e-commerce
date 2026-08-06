@@ -1,13 +1,11 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
 import { XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function CancelPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
       
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="bg-white p-12 rounded-[2.5rem] shadow-2xl shadow-blue-100/50 border border-gray-100 w-full max-w-lg text-center">

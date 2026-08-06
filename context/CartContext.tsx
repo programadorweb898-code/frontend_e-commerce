@@ -66,20 +66,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   [cart]);
 
   const addMutation = useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) => 
-      api.addToCart(productId, quantity),
-    onMutate: async (newItem) => {
+    mutationFn: ({ product, quantity }: { product: CartProductInput; quantity: number }) => 
+      api.addToCart(product._id, quantity),
+    onMutate: async ({ product, quantity }) => {
       await queryClient.cancelQueries({ queryKey: ['cart'] });
       const previousCart = queryClient.getQueryData<CartApiResponse>(['cart']);
       
       queryClient.setQueryData<CartApiResponse>(['cart'], (old) => {
-        if (!old) return { items: [] };
+        if (!old) return { items: [{ productId: product, quantity, priceSnapShot: product.price }] };
         const items = [...old.items];
         const index = items.findIndex(item => 
-          (typeof item.productId === 'object' ? item.productId._id : item.productId) === newItem.productId
+          (typeof item.productId === 'object' ? item.productId._id : item.productId) === product._id
         );
         if (index > -1) {
-          items[index] = { ...items[index], quantity: items[index].quantity + newItem.quantity };
+          items[index] = { ...items[index], quantity: items[index].quantity + quantity };
+        } else {
+          items.push({ productId: product, quantity, priceSnapShot: product.price });
         }
         return { ...old, items };
       });
@@ -150,7 +152,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return;
           }
           try {
-            await addMutation.mutateAsync({ productId: p._id, quantity: q });
+            await addMutation.mutateAsync({ product: p, quantity: q });
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : "Unknown error";
             if (message !== "SESSION_EXPIRED") {

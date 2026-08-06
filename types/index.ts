@@ -21,6 +21,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  error?: boolean; // Campo añadido para estado de error optimista
 }
 
 export interface CartApiItem {
