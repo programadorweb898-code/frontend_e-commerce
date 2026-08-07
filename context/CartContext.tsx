@@ -73,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const previousCart = queryClient.getQueryData<CartApiResponse>(['cart']);
       
       queryClient.setQueryData<CartApiResponse>(['cart'], (old) => {
-        if (!old) return { items: [{ productId: product, quantity, priceSnapShot: product.price }] };
+        if (!old) return { items: [{ productId: product._id, quantity, priceSnapShot: product.price }] };
         const items = [...old.items];
         const index = items.findIndex(item => 
           (typeof item.productId === 'object' ? item.productId._id : item.productId) === product._id
@@ -81,7 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (index > -1) {
           items[index] = { ...items[index], quantity: items[index].quantity + quantity };
         } else {
-          items.push({ productId: product, quantity, priceSnapShot: product.price });
+          items.push({ productId: product._id, quantity, priceSnapShot: product.price });
         }
         return { ...old, items };
       });
