@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { CheckCircle, Loader2, LogOut, ShoppingBag } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/translations";
 
@@ -63,7 +62,6 @@ export default function SuccessPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 relative overflow-hidden">
-      <Navbar />
       
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="text-center space-y-8">
