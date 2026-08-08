@@ -6,6 +6,8 @@ import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { ShoppingCart } from "lucide-react";
 import { resolveImageUrl } from "@/lib/image";
+import { useLanguage } from "@/context/LanguageContext";
+import { localizeProduct, localizeCategory } from "@/lib/productI18n";
 
 interface ProductCardProps {
   product: Product;
@@ -13,7 +15,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, cart } = useCart();
+  const { language } = useLanguage();
   const router = useRouter();
+  const localized = localizeProduct(product, language);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,13 +49,13 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="p-4">
         <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
-          {product.category}
+          {localizeCategory(product.category, language)}
         </p>
         <h3 className="text-lg font-bold text-gray-900 line-clamp-1 mb-2">
-          {product.title}
+          {localized.title}
         </h3>
         <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-          {product.description}
+          {localized.description}
         </p>
         <div className="flex items-center justify-between">
           <span className="text-xl font-black text-gray-900">

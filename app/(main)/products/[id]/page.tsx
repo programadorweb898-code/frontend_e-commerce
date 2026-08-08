@@ -8,10 +8,13 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import { resolveImageUrl } from "@/lib/image";
+import { useLanguage } from "@/context/LanguageContext";
+import { localizeProduct, localizeCategory } from "@/lib/productI18n";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -33,8 +36,10 @@ export default function ProductDetailPage() {
     }
   }, [id]);
 
-  if (loading) return <div className="p-20 text-center">Loading...</div>;
-  if (!product) return <div className="p-20 text-center text-red-500">Product not found</div>;
+  if (loading) return <div className="p-20 text-center">{t("productDetail.loading")}</div>;
+  if (!product) return <div className="p-20 text-center text-red-500">{t("productDetail.notFound")}</div>;
+
+  const localized = localizeProduct(product, language);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -45,11 +50,11 @@ export default function ProductDetailPage() {
           className="flex items-center space-x-2 text-gray-500 hover:text-blue-600 transition-colors mb-12"
         >
           <ArrowLeft size={20} />
-          <span className="font-bold">Back to products</span>
+          <span className="font-bold">{t("productDetail.back")}</span>
         </button>
 
         <div className="grid grid-cols-1 gap-20 items-start max-w-2xl mx-auto">
-          <div className="relative aspect-square overflow-hidden mx-auto block">
+          <div className="relative aspect-[4/3] overflow-hidden w-full max-w-md mx-auto">
             <Image
               src={resolveImageUrl(product.image)}
               alt={product.title}
@@ -61,10 +66,10 @@ export default function ProductDetailPage() {
           <div className="flex flex-col h-full w-full">
             <div className="flex-grow">
               <span className="inline-block text-blue-600 bg-blue-50 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-                {product.category}
+                {localizeCategory(product.category, language)}
               </span>
               <h1 className="text-4xl font-black text-gray-900 leading-tight mb-6">
-                {product.title}
+                {localized.title}
               </h1>
               <p className="text-4xl font-black text-gray-900 mb-8">
                 ${product.price.toFixed(2)}
@@ -72,7 +77,7 @@ export default function ProductDetailPage() {
               
               <div className="prose prose-blue mb-10">
                 <p className="text-base text-gray-500 leading-relaxed">
-                  {product.description}
+                  {localized.description}
                 </p>
               </div>
 
@@ -97,7 +102,7 @@ export default function ProductDetailPage() {
                   className="flex-grow bg-blue-600 text-white py-5 rounded-2xl font-black flex items-center justify-center space-x-3 hover:bg-blue-700 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-200"
                 >
                   <ShoppingCart size={24} />
-                  <span>Add to Shopping Cart</span>
+                  <span>{t("productDetail.addToCart")}</span>
                 </button>
               </div>
             </div>
@@ -105,15 +110,15 @@ export default function ProductDetailPage() {
             <div className="grid grid-cols-3 gap-4 pt-12 border-t border-gray-100">
               <div className="flex flex-col items-center text-center space-y-2">
                 <Truck className="text-gray-400" size={24} />
-                <span className="text-xs font-bold text-gray-500 uppercase">Free Shipping</span>
+                <span className="text-xs font-bold text-gray-500 uppercase">{t("productDetail.freeShipping")}</span>
               </div>
               <div className="flex flex-col items-center text-center space-y-2">
                 <ShieldCheck className="text-gray-400" size={24} />
-                <span className="text-xs font-bold text-gray-500 uppercase">2 Year Warranty</span>
+                <span className="text-xs font-bold text-gray-500 uppercase">{t("productDetail.warranty")}</span>
               </div>
               <div className="flex flex-col items-center text-center space-y-2">
                 <RefreshCw className="text-gray-400" size={24} />
-                <span className="text-xs font-bold text-gray-500 uppercase">Easy Returns</span>
+                <span className="text-xs font-bold text-gray-500 uppercase">{t("productDetail.easyReturns")}</span>
               </div>
             </div>
           </div>

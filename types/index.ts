@@ -1,5 +1,6 @@
 export interface Product {
   _id: string;
+  fakeStoreId?: number;
   title: string;
   price: number;
   description: string;

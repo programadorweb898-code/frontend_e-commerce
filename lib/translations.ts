@@ -79,6 +79,15 @@ export const translations = {
       keepShopping: "SEGUIR COMPRANDO",
       logout: "CERRAR SESIÓN",
     },
+    productDetail: {
+      back: "Volver a productos",
+      addToCart: "Añadir al Carrito",
+      freeShipping: "Envío Gratis",
+      warranty: "2 Años de Garantía",
+      easyReturns: "Devoluciones Fáciles",
+      loading: "Cargando...",
+      notFound: "Producto no encontrado",
+    },
     language: {
       es: "Español",
       en: "English",
@@ -177,6 +186,15 @@ export const translations = {
       modalDescription: "Your purchase has been completed correctly.",
       keepShopping: "KEEP SHOPPING",
       logout: "LOGOUT",
+    },
+    productDetail: {
+      back: "Back to products",
+      addToCart: "Add to Shopping Cart",
+      freeShipping: "Free Shipping",
+      warranty: "2 Year Warranty",
+      easyReturns: "Easy Returns",
+      loading: "Loading...",
+      notFound: "Product not found",
     },
     language: {
       es: "Español",
