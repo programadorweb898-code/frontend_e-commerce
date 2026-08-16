@@ -59,7 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartData]);
 
   const totalItems = useMemo(
-    () => cart.reduce((sum, item) => sum + item.quantity, 0),
+    () => cart.length,
     [cart]
   );
 

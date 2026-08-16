@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Order } from "@/types";
 import { api } from "@/lib/api";
 import { Package, Clock, CheckCircle, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { resolveImageUrl } from "@/lib/image";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -95,9 +97,19 @@ export default function OrdersPage() {
                   <div className="px-6 py-4 bg-white border-t border-gray-100">
                     <h3 className="font-bold mb-2">Items:</h3>
                     {order.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm py-1">
-                        <span>{item.title} (x{item.quantity})</span>
-                        <span>${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
+                      <div key={idx} className="flex gap-4 items-center py-2 border-b border-gray-50 last:border-none">
+                        <div className="relative h-12 w-12 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                          <Image
+                            src={resolveImageUrl(item.productId.image)}
+                            alt={item.title}
+                            fill
+                            className="object-contain p-1"
+                          />
+                        </div>
+                        <div className="flex-grow flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-900">{item.title} (x{item.quantity})</span>
+                            <span className="font-bold text-gray-900">${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -52,7 +52,7 @@ export interface Order {
   _id: string;
   userId: string;
   items: {
-    productId: string;
+    productId: Product;
     title: string;
     quantity: number;
     priceAtPurchase: number;
