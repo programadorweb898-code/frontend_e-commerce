@@ -97,7 +97,7 @@ export default function OrdersPage() {
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between text-sm py-1">
                         <span>{item.title} (x{item.quantity})</span>
-                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        <span>${(item.priceAtPurchase * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
