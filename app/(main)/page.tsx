@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { ProductCard } from "@/components/ProductCard";
-import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { ShoppingBag, TrendingUp, Sparkles, Search, X, Filter } from "lucide-react";
 import { Product } from "@/types";
@@ -233,7 +232,6 @@ export default function Home() {
         )}
       </main>
 
-      <Footer />
     </div>
   );
 }
