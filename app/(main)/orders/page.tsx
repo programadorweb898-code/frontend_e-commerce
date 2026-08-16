@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -25,6 +26,10 @@ export default function OrdersPage() {
   }, []);
 
   const { t } = useLanguage();
+
+  const toggleExpand = (orderId: string) => {
+    setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -64,11 +69,7 @@ export default function OrdersPage() {
                 </div>
                 <div className="px-6 py-4 bg-gray-50/50 flex items-center justify-between">
                   <div className="flex flex-col gap-1">
-                    {order.items.map((item, idx) => (
-                      <span key={idx} className="text-xs text-gray-600 font-medium">
-                        • {item.title} (x{item.quantity})
-                      </span>
-                    ))}
+                    <span className="text-sm font-bold text-gray-900">E-Commerce App</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     {order.status === "completed" || order.status === "paid" ? (
@@ -83,11 +84,24 @@ export default function OrdersPage() {
                       </span>
                     )}
                   </div>
-                  <button className="text-blue-600 font-bold text-sm flex items-center space-x-1 hover:underline">
-                    <span>View Details</span>
+                  <button 
+                    onClick={() => toggleExpand(order._id)}
+                    className="text-blue-600 font-bold text-sm flex items-center space-x-1 hover:underline">
+                    <span>{expandedOrderId === order._id ? "Hide Details" : "View Details"}</span>
                     <ChevronRight size={16} />
                   </button>
                 </div>
+                {expandedOrderId === order._id && (
+                  <div className="px-6 py-4 bg-white border-t border-gray-100">
+                    <h3 className="font-bold mb-2">Items:</h3>
+                    {order.items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-sm py-1">
+                        <span>{item.title} (x{item.quantity})</span>
+                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
