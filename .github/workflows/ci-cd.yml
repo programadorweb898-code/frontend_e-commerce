@@ -45,6 +45,20 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      - name: Warm up backend (Render cold start)
+        run: |
+          echo "Despertando backend en Render..."
+          for i in $(seq 1 20); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" $NEXT_PUBLIC_API_URL/api/health || echo "000")
+            if [ "$status" = "200" ]; then
+              echo "Backend arriba (intento $i)"
+              exit 0
+            fi
+            echo "Intento $i: status $status, esperando..."
+            sleep 5
+          done
+          echo "Backend no respondió a tiempo, sigo igual (los tests van a fallar si no está arriba)"
+
       - name: Run E2E tests
         run: npm run test:e2e
 
