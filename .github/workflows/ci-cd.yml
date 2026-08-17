@@ -76,6 +76,8 @@ jobs:
 
       - name: Build
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -108,6 +110,8 @@ jobs:
 
       - name: Build
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Deploy preview
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
