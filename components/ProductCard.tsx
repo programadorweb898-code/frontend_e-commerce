@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, AlertCircle } from "lucide-react";
 import { resolveImageUrl } from "@/lib/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { localizeProduct, localizeCategory } from "@/lib/productI18n";
@@ -18,6 +19,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const { language } = useLanguage();
   const router = useRouter();
   const localized = localizeProduct(product, language);
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => setShowNotification(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
     const isAlreadyInCart = cart.some((item) => item.productId === product._id);
 
     if (isAlreadyInCart) {
-      alert("El producto ya fue agregado al carrito.");
+      setShowNotification(true);
     } else {
       addToCart(product, 1);
     }
@@ -35,8 +44,14 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div 
       onClick={() => router.push(`/products/${product._id}`)}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer"
+      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer relative"
     >
+      {showNotification && (
+        <div className="absolute top-2 left-2 right-2 z-10 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-lg shadow-md flex items-center gap-2 text-sm">
+          <AlertCircle size={16} />
+          <span>El producto ya está en el carrito.</span>
+        </div>
+      )}
       <div className="relative h-64 w-full bg-gray-50 overflow-hidden flex items-center justify-center">
         <div className="relative h-1/2 w-1/2">
           <Image

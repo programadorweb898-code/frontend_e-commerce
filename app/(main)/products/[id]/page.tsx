@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw, AlertCircle } from "lucide-react";
 import { resolveImageUrl } from "@/lib/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { localizeProduct, localizeCategory } from "@/lib/productI18n";
@@ -18,7 +18,15 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => setShowNotification(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
 
   useEffect(() => {
     if (id) {
@@ -39,12 +47,27 @@ export default function ProductDetailPage() {
   if (loading) return <div className="p-20 text-center">{t("productDetail.loading")}</div>;
   if (!product) return <div className="p-20 text-center text-red-500">{t("productDetail.notFound")}</div>;
 
+  const handleAddToCart = () => {
+    const isAlreadyInCart = cart.some((item) => item.productId === product._id);
+    if (isAlreadyInCart) {
+      setShowNotification(true);
+    } else {
+      addToCart(product, quantity);
+    }
+  };
+
   const localized = localizeProduct(product, language);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
       
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 relative">
+        {showNotification && (
+          <div className="fixed top-20 right-4 z-50 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3">
+            <AlertCircle size={20} />
+            <span>El producto ya está en el carrito.</span>
+          </div>
+        )}
         <button 
           onClick={() => router.back()}
           className="flex items-center space-x-2 text-gray-500 hover:text-blue-600 transition-colors mb-12"
@@ -98,7 +121,7 @@ export default function ProductDetailPage() {
                   </button>
                 </div>
                 <button
-                  onClick={() => addToCart(product, quantity)}
+                  onClick={handleAddToCart}
                   className="flex-grow bg-blue-600 text-white py-5 rounded-2xl font-black flex items-center justify-center space-x-3 hover:bg-blue-700 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-200"
                 >
                   <ShoppingCart size={24} />
