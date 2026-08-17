@@ -14,6 +14,7 @@ const mockProduct = {
 };
 
 const mockCartContext = {
+  cart: [],
   cartItems: [],
   addToCart: vi.fn(),
   removeFromCart: vi.fn(),
