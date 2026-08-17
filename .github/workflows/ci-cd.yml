@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "Despertando backend en Render..."
           for i in $(seq 1 20); do
-            status=$(curl -s -o /dev/null -w "%{http_code}" $NEXT_PUBLIC_API_URL/api/health || echo "000")
+            status=$(curl -s -o /dev/null -w "%{http_code}" $NEXT_PUBLIC_API_URL/products/getProducts || echo "000")
             if [ "$status" = "200" ]; then
               echo "Backend arriba (intento $i)"
               exit 0
